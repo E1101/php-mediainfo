@@ -108,6 +108,12 @@ class MediaInfoContainerBuilder
      */
     private function formatAttribute($attribute)
     {
-        return trim(str_replace('__', '_', str_replace(' ', '_', strtolower($attribute))), '_');
+        return trim(
+            str_replace('__', '_',
+                str_replace(' ', '_',
+                    strtolower(preg_replace('/[a-z]+(?=[A-Z])|[A-Z]+(?=[A-Z][a-z])/', '\0_', $attribute))
+                )
+            ), '_'
+        );
     }
 }

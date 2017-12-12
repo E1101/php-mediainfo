@@ -16,6 +16,7 @@ class MediaInfoOutputParserTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->outputPath = __DIR__.'/../fixtures/mediainfo-output.xml';
+        $this->outputMediaInfo17Path = __DIR__.'/../fixtures/mediainfo-17.0-output.xml';
         $this->invalidOutputPath = __DIR__.'/../fixtures/mediainfo-output-invalid-types.xml';
     }
 
@@ -47,6 +48,30 @@ class MediaInfoOutputParserTest extends \PHPUnit_Framework_TestCase
         $audios = $mediaInfoContainer->getAudios();
         $this->assertEquals(20, count($audios[0]->get()));
         $this->assertEquals(20974464, $audios[0]->get('samples_count'));
+        $this->assertEquals(null, $audios[0]->get('test'));
+
+        $subtitles = $mediaInfoContainer->getSubtitles();
+        $this->assertEquals(16, count($subtitles[0]->get()));
+    }
+
+    public function testGetMediaInfo17Container()
+    {
+        $mediaInfoOutputParser = new MediaInfoOutputParser();
+        $mediaInfoOutputParser->parse(file_get_contents($this->outputMediaInfo17Path));
+        $mediaInfoContainer = $mediaInfoOutputParser->getMediaInfoContainer();
+
+        $this->assertEquals('Mhor\MediaInfo\Container\MediaInfoContainer', get_class($mediaInfoContainer));
+
+        $this->assertEquals(1, count($mediaInfoContainer->getAudios()));
+        $this->assertEquals(1, count($mediaInfoContainer->getVideos()));
+        $this->assertEquals(0, count($mediaInfoContainer->getImages()));
+        $this->assertEquals(0, count($mediaInfoContainer->getMenus()));
+        $this->assertEquals('Mhor\MediaInfo\Type\General', get_class($mediaInfoContainer->getGeneral()));
+
+        $audios = $mediaInfoContainer->getAudios();
+
+        $this->assertEquals(19, count($audios[0]->get()));
+        $this->assertEquals(1263840, $audios[0]->get('sampling_count'));
         $this->assertEquals(null, $audios[0]->get('test'));
 
         $subtitles = $mediaInfoContainer->getSubtitles();
